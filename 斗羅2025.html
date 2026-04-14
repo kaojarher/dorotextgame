@@ -1,0 +1,1474 @@
+<title>斗羅大陸RPG V2</title>
+<meta charset="UTF-8">
+<style>
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  font-family: "微軟正黑體", sans-serif;
+  background: #1a1a1a;
+  color: #fff;
+  font-size: 36px; 
+  line-height: 1.5;
+}
+
+.game-container {
+  max-width: 100%;
+  margin: 0;
+  padding: 10px;
+}
+
+.character-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.character {
+  background: #333;
+  padding: 10px;
+  border-radius: 8px;
+  flex: none;
+}
+
+.status-panel {
+  background: #333;
+  width: 49%;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.dialogue-panel {
+  background: #333;
+  padding: 10px;
+  border-radius: 8px;
+  height: 180px;
+  overflow-y: auto;
+  font-size: 36px; 
+}
+
+.battle-panel {
+  background: #333;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.battle-panel {
+  margin-bottom: 10px;
+}
+
+.button {
+  background: #4CAF50;
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 36px; 
+  min-width: 80px;
+}
+
+.button:hover {
+  background: #45a049;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 24px; 
+  background: #555;
+  border-radius: 8px;
+  overflow: hidden;
+  margin: 3px 0;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: #4CAF50;
+  transition: width 0.3s ease;
+}
+
+.npc {
+  padding: 8px;
+  margin: 4px;
+  border: 1px solid #555;
+  border-radius: 4px;
+  font-size: 36px; 
+}
+
+.npc:hover {
+  background: #444;
+}
+
+.chat-input {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.chat-input input {
+  flex: 1;
+  padding: 8px;
+  font-size: 36px; 
+}
+
+.chat-input input:focus {
+  outline: none;
+  background: #666;
+}
+
+.character-selector {
+  margin-bottom: 8px;
+}
+
+.character-selector select {
+  padding: 8px;
+  font-size: 36px; 
+  width: 100%;
+}
+
+.save-load {
+  margin-bottom: 8px;
+  display: flex;
+  gap: 5px;
+}
+
+h1 {
+  font-size: 36; 
+  margin: 10px 0;
+}
+
+h2 {
+  font-size: 36px; 
+  margin: 8px 0;
+}
+
+.inventory-panel {
+  background: #333;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  margin: 6px 0;
+  background: #444;
+  border-radius: 4px;
+}
+
+.modal {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0,0,0,0.7);
+}
+
+.modal-content {
+  margin: 5% auto;
+  padding: 15px;
+  width: 95%;
+  max-width: none;
+  border-radius: 8px;
+  max-height: 90vh;
+}
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 5px;
+}
+
+.stat-item {
+  padding: 8px;
+  background: #444;
+  border-radius: 4px;
+}
+
+.soul-ring-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  margin: 6px 0;
+  background: #444;
+  border-radius: 4px;
+}
+
+.soul-ring-item button {
+  margin-left: 5px;
+}
+
+.team-stats {
+  background: #333;
+  padding: 10px;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
+
+.training-animation {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 1000;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.training-animation.active {
+  opacity: 1;
+}
+
+.training-particle {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+#arena-status {
+  margin: 5px 0;
+  font-size: 36px;
+}
+
+#arena-rewards {
+  margin-top: 5px;
+}
+
+@media (orientation: landscape) {
+  body {
+    font-size: 36px; 
+  }
+  
+  h1 {
+    font-size: 36px; 
+  }
+  
+  h2 {
+    font-size: 36px; 
+  }
+  
+  .button, .dialogue-panel, .npc, .chat-input input, .character-selector select {
+    font-size: 36px; 
+  }
+  
+  .character-panel {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .character {
+    width: calc(50% - 5px);
+  }
+}
+</style>
+</head>
+<body>
+<div class="game-container">
+ 
+  
+   <div class="character-selector">
+    <select id="active-character" onchange="switchCharacter()">
+      <option value="&#x5510;&#x4e09;">唐三</option>
+      <option value="&#x5c0f;&#x821e;">小舞</option>
+      <option value="&#x6234;&#x6c90;&#x767d;">戴沐白</option>
+      <option value="&#x6731;&#x7af9;&#x6e05;">朱竹清</option>
+      <option value="&#x5967;&#x65af;&#x5361;">奧斯卡</option>
+      <option value="&#x5be7;&#x69ae;&#x69ae;">寧蓉蓉</option>
+      <option value="&#x99ac;&#x7d05;&#x4fca;">馬紅俊</option>
+    </select>
+  </div>
+
+  <div class="chat-input">
+    <input type="text" id="chat-input" placeholder="請輸入對話..." onkeypress="handleKeyPress(event)">
+    <button class="button" onclick="sendMessage()">送出</button>
+  </div>
+
+  
+  <div class="battle-panel">
+
+    
+    <button class="button" onclick="toggleTraining()">修練</button>
+    <button class="button" onclick="huntSoulBeast()">森林</button>
+    <button class="button" onclick="openMarket()">拍賣</button>
+    <button class="button" onclick="drawCharacter()">魂殿</button>
+    <button class="button" onclick="enterDungeon()">副本</button>
+    <button class="button" onclick="enterArena()">競技</button>
+	<button class="button" onclick="saveGame()">儲存</button>
+    <button class="button" onclick="loadGame()">讀取</button>
+  </div>
+      </div>
+        <div class="dialogue-panel" id="dialogue-box">
+		歡迎回到斗羅大陸！
+	</div>
+  <div class="character-panel">
+    <div class="character">
+      <h2 id="character-name">唐三</h2><div id="battle-status">狀態: 待命中</div>
+      <div>等級: <span id="level">1</span></div>
+      <div>經驗值:</div>
+      <div class="progress-bar">
+        <div id="exp-bar" class="progress-bar-fill" style="width: 0%"></div>
+      </div>
+      <div>體力:</div>
+      <div class="progress-bar">
+	  <div id="energy-bar" class="progress-bar-fill" style="width: 100%"></div>
+      </div>
+      <div>武魂: <span id="wu-hun"></span></div>
+	  <div id="soul-rings"></div>
+	   
+	  <h2>儲物空間</h2>
+      <div id="inventory"></div>
+   
+
+	   
+	   
+	   <div id="character-stats"></div>
+團隊: <span id="team-gold">0</span> 金魂幣
+ <div class="character">
+
+	 </div>
+   
+    
+    <div class="character">
+      <h2>裝備</h2>
+      <div id="equipped-items">
+        <div>左手: <span id="equipped-weapon">無</span></div>
+        <div>右手: <span id="equipped-armor">無</span></div>  
+        <div>飾品: <span id="equipped-accessory">無</span></div>
+        <div>身體: <span id="equipped-soulbone">無</span></div>
+      </div>
+    
+      <h2>魂骨裝備</h2>
+      <div id="equipped-soulbones">
+        <div>頭部: <span id="equipped-head-bone">無</span></div>
+        <div>左手: <span id="equipped-left-arm-bone">無</span></div>
+        <div>右手: <span id="equipped-right-arm-bone">無</span></div>
+        <div>左腿: <span id="equipped-left-leg-bone">無</span></div>
+        <div>右腿: <span id="equipped-right-leg-bone">無</span></div>
+        <div>身體: <span id="equipped-spine-bone">無</span></div>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="status-panel">
+    <h2>NPC聊天</h2>
+    <div id="npc-list">
+      <div class="npc" onclick="talkToNPC(&apos;&#x5927;&#x5e2b;&apos;)">大師</div>
+      <div class="npc" onclick="talkToNPC(&apos;&#x5c0f;&#x767d;&apos;)">小白</div>
+      <div class="npc" onclick="talkToNPC(&apos;&#x8001;&#x592b;&apos;)">老者</div>
+      <div class="npc" onclick="talkToNPC(&apos;&#x6d77;&#x795e;&#x5cf6;&apos;)">海神島居民</div>
+    </div>
+  </div>
+
+
+
+  <div id="market-modal" class="modal">
+    <div class="modal-content">
+      <h2>拍賣場</h2><button class="button" onclick="closeMarket()">離開</button>
+      <select id="market-item-filter" onchange="filterMarketItems()">
+        <option value="all">全部</option>
+        <option value="weapon">武器</option>
+        <option value="armor">防具</option> 
+        <option value="accessory">飾品</option>
+        <option value="consumable">消耗品</option>
+        <option value="soulBone">魂骨</option>
+      </select>
+      <div id="market-items"></div>
+      
+    </div>
+  </div>
+
+
+
+
+  <div id="training-animation" class="training-animation"></div>
+</div>
+
+<script>let dialogueHistory = [];
+const characters = {
+  '唐三': {
+    level: 1,
+    exp: 0,
+    expNeeded: 100,
+    energy: 100,
+    soulPower: 10,
+    training: false,
+    soulRings: [],
+    武魂: '藍銀草/昊天錘',
+    inventory: [],
+    equipment: {
+      weapon: null,
+      armor: null,
+      accessory: null,
+      soulBone: null
+    },
+    gold: 1000,
+    attack: 0,
+    defense: 0,
+    soulBones: [],
+    soulBoneSlots: {
+      head: null,
+      leftArm: null,
+      rightArm: null,
+      leftLeg: null,
+      rightLeg: null,
+      spine: null
+    }
+  },
+  '小舞': {
+    level: 1,
+    exp: 0,
+    expNeeded: 100,
+    energy: 100,
+    soulPower: 10,
+    training: false,
+    soulRings: [],
+    武魂: '柔骨魅兔',
+    inventory: [],
+    equipment: {
+      weapon: null,
+      armor: null,
+      accessory: null,
+      soulBone: null
+    },
+    gold: 1000,
+    attack: 0,
+    defense: 0,
+    soulBones: [],
+    soulBoneSlots: {
+      head: null,
+      leftArm: null,
+      rightArm: null,
+      leftLeg: null,
+      rightLeg: null,
+      spine: null
+    }
+  },
+  '戴沐白': {
+    level: 1,
+    exp: 0,
+    expNeeded: 100,
+    energy: 100,
+    soulPower: 10,
+    training: false,
+    soulRings: [],
+    武魂: '白虎',
+    inventory: [],
+    equipment: {
+      weapon: null,
+      armor: null,
+      accessory: null,
+      soulBone: null
+    },
+    gold: 1000,
+    attack: 0,
+    defense: 0,
+    soulBones: [],
+    soulBoneSlots: {
+      head: null,
+      leftArm: null,
+      rightArm: null,
+      leftLeg: null,
+      rightLeg: null,
+      spine: null
+    }
+  },
+  '朱竹清': {
+    level: 1,
+    exp: 0,
+    expNeeded: 100,
+    energy: 100,
+    soulPower: 10,
+    training: false,
+    soulRings: [],
+    武魂: '幽冥靈貓',
+    inventory: [],
+    equipment: {
+      weapon: null,
+      armor: null,
+      accessory: null,
+      soulBone: null
+    },
+    gold: 1000,
+    attack: 0,
+    defense: 0,
+    soulBones: [],
+    soulBoneSlots: {
+      head: null,
+      leftArm: null,
+      rightArm: null,
+      leftLeg: null,
+      rightLeg: null,
+      spine: null
+    }
+  },
+  '奧斯卡': {
+    level: 1,
+    exp: 0,
+    expNeeded: 100,
+    energy: 100,
+    soulPower: 10,
+    training: false,
+    soulRings: [],
+    武魂: '香腸',
+    inventory: [],
+    equipment: {
+      weapon: null,
+      armor: null,
+      accessory: null,
+      soulBone: null
+    },
+    gold: 1000,
+    attack: 0,
+    defense: 0,
+    soulBones: [],
+    soulBoneSlots: {
+      head: null,
+      leftArm: null,
+      rightArm: null,
+      leftLeg: null,
+      rightLeg: null,
+      spine: null
+    }
+  },
+  '寧榮榮': {
+    level: 1,
+    exp: 0,
+    expNeeded: 100,
+    energy: 100,
+    soulPower: 10,
+    training: false,
+    soulRings: [],
+    武魂: '七寶琉璃塔',
+    inventory: [],
+    equipment: {
+      weapon: null,
+      armor: null,
+      accessory: null,
+      soulBone: null
+    },
+    gold: 1000,
+    attack: 0,
+    defense: 0,
+    soulBones: [],
+    soulBoneSlots: {
+      head: null,
+      leftArm: null,
+      rightArm: null,
+      leftLeg: null,
+      rightLeg: null,
+      spine: null
+    }
+  },
+  '馬紅俊': {
+    level: 1,
+    exp: 0,
+    expNeeded: 100,
+    energy: 100,
+    soulPower: 10,
+    training: false,
+    soulRings: [],
+    武魂: '邪火鳳凰',
+    inventory: [],
+    equipment: {
+      weapon: null,
+      armor: null,
+      accessory: null,
+      soulBone: null
+    },
+    gold: 1000,
+    attack: 0,
+    defense: 0,
+    soulBones: [],
+    soulBoneSlots: {
+      head: null,
+      leftArm: null,
+      rightArm: null,
+      leftLeg: null,
+      rightLeg: null,
+      spine: null
+    }
+  }
+};
+let currentCharacter = '唐三';
+const dialogues = {
+  '大師': ["想要成為強大的魂師，就要不斷修練。", "魂環的選擇對魂師來說至關重要。", "史萊克學院只收怪物，你們就是最好的例子。"],
+  '小白': ["史萊克學院雖小，但培養出的都是精英。", "記住，團隊合作才能發揮最大的力量。", "不要辜負了史萊克學院的名聲。"],
+  '老夫': ["相信自己，努力修練。", "天賦固然重要，但更重要的是堅持。", "年輕人要戒驕戒躁。"],
+  '海神島': ["海神的考驗不是那麼容易通過的。", "相信自己，你一定能成為海神繼承人。", "要時刻保持謙遜的心態。"]
+};
+const characterResponses = {
+  '唐三': {
+    default: ["讓我認真思考一下。", "這個問題很有意思。", "修練才是王道。"],
+    keywords: {
+      "魂環": ["每個魂環都代表著不同的力量。", "魂環搭配需要慎重考慮。"],
+      "昊天錘": ["這是我父親傳承給我的武魂。", "昊天錘的力量還需要更多磨練。"],
+      "海神": ["成為海神是我的使命。", "海神的考驗讓我成長很多。"]
+    }
+  },
+  '小舞': {
+    default: ["三哥，我們去修練吧！", "這片大陸真是充滿驚喜呢。", "柔骨魅兔可不是好惹的！"],
+    keywords: {
+      "魂環": ["十萬年魂環的力量真是可怕。", "我也要努力提升等級。"],
+      "修練": ["一起切磋如何？", "修練才能變得更強！"]
+    }
+  },
+  '戴沐白': {
+    default: ["身為史萊克七怪，我們要更加努力。", "白虎武魂可是很厲害的。", "要來切磋一下嗎？"],
+    keywords: {
+      "魂環": ["魂環的年限越高越好。", "合適的魂環才能發揮最大威力。"],
+      "史萊克": ["史萊克學院是最棒的！", "我們七怪一定會名震大陸。"]
+    }
+  },
+  '朱竹清': {
+    default: ["......", "需要我幫忙嗎？", "我會繼續變強的。"],
+    keywords: {
+      "修練": ["只有不斷修練才能超越自己。", "我要證明自己的價值。"],
+      "武魂": ["幽冥靈貓的速度無人能及。", "敏攻係魂師也很強大。"]
+    }
+  },
+  '奧斯卡': {
+    default: ["要來根香腸補充體力嗎？", "食物系魂師也很重要的！", "我的香腸可是特製的。"],
+    keywords: {
+      "香腸": ["我的香腸可是有特殊效果的。", "補充體力就靠我了！"],
+      "魂環": ["食物系魂環也要精心挑選。", "每個魂環都要物盡其用。"]
+    }
+  },
+  '寧榮榮': {
+    default: ["七寶琉璃塔全力支援！", "輔助系魂師也很重要哦。", "大家一起努力吧！"],
+    keywords: {
+      "武魂": ["七寶琉璃塔可是頂級輔助武魂。", "輔助能讓團隊更強大。"],
+      "修練": ["輔助系魂師的修練也不輕鬆。", "要成為最強輔助系魂師！"]
+    }
+  },
+  '馬紅俊': {
+    default: ["邪火鳳凰可不是蓋的！", "要來看看我的實力嗎？", "我也是很強的！"],
+    keywords: {
+      "武魂": ["邪火鳳凰雖然有缺陷，但威力十足。", "控制好邪火才是關鍵。"],
+      "修練": ["我也在努力克服武魂的缺陷。", "總有一天我會完全掌控邪火！"]
+    }
+  }
+};
+let items = {
+  weapon: ["木劍", "鐵劍", "精鋼劍", "魂導器", "昊天錘"],
+  armor: ["布衣", "皮甲", "鎖甲", "魂導甲"],
+  accessory: ["護符", "戒指", "項鍊", "魂導飾品"],
+  consumable: ["回復藥", "魂力藥", "強化藥"],
+  soulBone: ["頭骨", "左臂骨", "右臂骨", "左腿骨", "右腿骨", "脊椎骨"]
+};
+let marketItems = [];
+const possibleCharacters = ['比比東', '唐昊', '波塞西', '千仞雪', '獨孤博', '玉小剛', '柳二龍', '弗蘭德', '泰坦', '楊無敵', '牛皋', '白鎮', '呂洞賓', '李玉', '封號鬥羅', '劍鬥羅', '破魂鬥羅', '聖龍鬥羅', '天使鬥羅', '修羅鬥羅'];
+let drawnCharacters = 0;
+const dungeons = [{
+  level: 1,
+  name: '新手村試煉',
+  minLevel: 1,
+  reward: 1000,
+  soulPowerReq: 10
+}, {
+  level: 2,
+  name: '史萊克入學考試',
+  minLevel: 5,
+  reward: 2000,
+  soulPowerReq: 20
+}, {
+  level: 3,
+  name: '大魂師考核',
+  minLevel: 10,
+  reward: 3000,
+  soulPowerReq: 30
+}, {
+  level: 4,
+  name: '魂尊挑戰',
+  minLevel: 20,
+  reward: 4000,
+  soulPowerReq: 40
+}, {
+  level: 5,
+  name: '魂宗試煉',
+  minLevel: 30,
+  reward: 5000,
+  soulPowerReq: 50
+}, {
+  level: 6,
+  name: '魂王考驗',
+  minLevel: 40,
+  reward: 6000,
+  soulPowerReq: 60
+}, {
+  level: 7,
+  name: '魂帝挑戰',
+  minLevel: 50,
+  reward: 7000,
+  soulPowerReq: 70
+}, {
+  level: 8,
+  name: '魂聖試煉',
+  minLevel: 60,
+  reward: 8000,
+  soulPowerReq: 80
+}, {
+  level: 9,
+  name: '魂斗羅考核',
+  minLevel: 70,
+  reward: 9000,
+  soulPowerReq: 90
+}, {
+  level: 10,
+  name: '封號斗羅試煉',
+  minLevel: 80,
+  reward: 10000,
+  soulPowerReq: 100
+}, {
+  level: 11,
+  name: '海神島試煉',
+  minLevel: 85,
+  reward: 12000,
+  soulPowerReq: 110
+}, {
+  level: 12,
+  name: '深海魔鬼城',
+  minLevel: 90,
+  reward: 14000,
+  soulPowerReq: 120
+}, {
+  level: 13,
+  name: '生命之森',
+  minLevel: 92,
+  reward: 16000,
+  soulPowerReq: 130
+}, {
+  level: 14,
+  name: '天斗皇家',
+  minLevel: 94,
+  reward: 18000,
+  soulPowerReq: 140
+}, {
+  level: 15,
+  name: '武魂城考核',
+  minLevel: 96,
+  reward: 20000,
+  soulPowerReq: 150
+}, {
+  level: 16,
+  name: '星鬥戰場',
+  minLevel: 97,
+  reward: 25000,
+  soulPowerReq: 160
+}, {
+  level: 17,
+  name: '神界入口',
+  minLevel: 98,
+  reward: 30000,
+  soulPowerReq: 170
+}, {
+  level: 18,
+  name: '修羅試煉',
+  minLevel: 99,
+  reward: 35000,
+  soulPowerReq: 180
+}, {
+  level: 19,
+  name: '天使試煉',
+  minLevel: 99,
+  reward: 40000,
+  soulPowerReq: 190
+}, {
+  level: 20,
+  name: '神界考核',
+  minLevel: 99,
+  reward: 50000,
+  soulPowerReq: 200
+}];
+function enterDungeon() {
+  const modal = document.createElement('div');
+  modal.className = 'modal';
+  modal.style.display = 'block';
+  const content = document.createElement('div');
+  content.className = 'modal-content';
+  const title = document.createElement('h2');
+  title.textContent = '選擇副本';
+  content.appendChild(title);
+  const dungeonList = document.createElement('div');
+  dungeons.forEach(dungeon => {
+    const dungeonDiv = document.createElement('div');
+    dungeonDiv.className = 'item';
+    dungeonDiv.innerHTML = `
+      <span>第${dungeon.level}關: ${dungeon.name}</span>
+      <span>需求等級: ${dungeon.minLevel}</span>
+      <span>需求魂力: ${dungeon.soulPowerReq}</span>
+      <button class="button" onclick="challengeDungeon(${dungeon.level})">挑戰</button>
+    `;
+    dungeonList.appendChild(dungeonDiv);
+  });
+  content.appendChild(dungeonList);
+  const closeBtn = document.createElement('button');
+  closeBtn.className = 'button';
+  closeBtn.textContent = '關閉';
+  closeBtn.onclick = () => modal.remove();
+  content.appendChild(closeBtn);
+  modal.appendChild(content);
+  document.body.appendChild(modal);
+}
+function challengeDungeon(level) {
+  const char = characters[currentCharacter];
+  const dungeon = dungeons[level - 1];
+  if (char.level < dungeon.minLevel) {
+    addDialogue(`等級不足！需要等級 ${dungeon.minLevel}`);
+    return;
+  }
+  if (char.soulPower < dungeon.soulPowerReq) {
+    addDialogue(`魂力不足！需要魂力 ${dungeon.soulPowerReq}`);
+    return;
+  }
+  const levelDiff = char.level - dungeon.minLevel;
+  const soulPowerDiff = char.soulPower - dungeon.soulPowerReq;
+  const successRate = Math.min(0.9, 0.5 + levelDiff * 0.02 + soulPowerDiff * 0.01);
+  if (Math.random() < successRate) {
+    const rewards = {
+      gold: dungeon.reward,
+      exp: Math.floor(dungeon.reward / 10),
+      soulPower: Math.floor(level / 2)
+    };
+    const extraReward = Math.random();
+    if (extraReward < 0.1) {
+      const bone = items.soulBone[Math.floor(Math.random() * items.soulBone.length)];
+      const quality = ['普通', '優秀', '稀有', '史詩'][Math.floor(Math.random() * 4)];
+      const soulBone = {
+        name: bone,
+        type: 'soulBone',
+        quality: quality,
+        value: Math.floor(Math.random() * 2000) + 500
+      };
+      char.inventory.push(soulBone);
+      addDialogue(`獲得${quality}品質的魂骨 ${bone}！`);
+    } else if (extraReward < 0.3) {
+      const colors = ['黃', '紫', '黑'];
+      const color = colors[Math.min(Math.floor(level / 7), colors.length - 1)];
+      char.soulRings.push(color);
+      addDialogue(`獲得${color}色魂環！`);
+    }
+    char.gold += rewards.gold;
+    char.exp += rewards.exp;
+    char.soulPower += rewards.soulPower;
+    addDialogue(`成功通過第${level}關！`);
+    addDialogue(`獲得獎勵：${rewards.gold}金幣，${rewards.exp}經驗，${rewards.soulPower}魂力`);
+  } else {
+    const penaltyExp = Math.floor(dungeon.reward / 20);
+    char.exp = Math.max(0, char.exp - penaltyExp);
+    addDialogue(`挑戰失敗，失去${penaltyExp}經驗值...`);
+  }
+  updateUI();
+}
+function enterArena() {
+  const char = characters[currentCharacter];
+  const arenaFee = 2000;
+  if (char.gold < arenaFee) {
+    addDialogue('金幣不足！需要2000金幣參加比賽。');
+    return;
+  }
+  char.gold -= arenaFee;
+  const opponents = Object.keys(characters).filter(name => name !== currentCharacter);
+  if (opponents.length === 0) {
+    addDialogue('沒有對手可以比賽！');
+    char.gold += arenaFee;
+    return;
+  }
+  const opponent = opponents[Math.floor(Math.random() * opponents.length)];
+  const opponentChar = characters[opponent];
+  const charPower = char.attack + char.defense + char.soulRings.length * 100 + char.soulPower;
+  const opponentPower = opponentChar.attack + opponentChar.defense + opponentChar.soulRings.length * 100 + opponentChar.soulPower;
+  const charRoll = Math.random() * charPower;
+  const opponentRoll = Math.random() * opponentPower;
+  addDialogue(`${currentCharacter} VS ${opponent}！`);
+  if (charRoll > opponentRoll) {
+    const rewards = generateArenaRewards();
+    char.inventory.push(rewards);
+    char.gold += 1000;
+    addDialogue(`${currentCharacter} 獲勝！獲得 1000 金幣！`);
+    addDialogue(`獲得獎勵: ${rewards.quality} ${rewards.name}`);
+  } else {
+    char.gold += 200;
+    addDialogue(`${currentCharacter} 戰敗...獲得安慰獎 200 金幣`);
+  }
+  updateUI();
+}
+function generateArenaRewards() {
+  const types = ['weapon', 'armor', 'accessory', 'soulBone'];
+  const type = types[Math.floor(Math.random() * types.length)];
+  const itemList = items[type];
+  const itemName = itemList[Math.floor(Math.random() * itemList.length)];
+  const qualities = ['普通', '優秀', '稀有', '史詩'];
+  const qualityWeights = [0.5, 0.3, 0.15, 0.05];
+  let quality = '普通';
+  const roll = Math.random();
+  let accumWeight = 0;
+  for (let i = 0; i < qualities.length; i++) {
+    accumWeight += qualityWeights[i];
+    if (roll <= accumWeight) {
+      quality = qualities[i];
+      break;
+    }
+  }
+  return {
+    name: itemName,
+    type: type,
+    quality: quality,
+    value: Math.floor(Math.random() * 1000) + 500
+  };
+}
+function updateStats() {
+  const statsDiv = document.getElementById('character-stats');
+  statsDiv.innerHTML = '';
+  const char = characters[currentCharacter];
+  statsDiv.innerHTML += `
+    <div class="stats-grid">
+      <div class="stat-item">${currentCharacter}</div>
+      <div class="stat-item">攻擊力: ${char.attack + (char.equipment.weapon ? getItemStats(char.equipment.weapon).attack : 0) + (char.equipment.accessory ? getItemStats(char.equipment.accessory).attack : 0)}</div>
+      <div class="stat-item">防禦力: ${char.defense + (char.equipment.armor ? getItemStats(char.equipment.armor).defense : 0) + (char.equipment.accessory ? getItemStats(char.equipment.accessory).defense : 0)}</div>
+      <div class="stat-item">金幣: ${char.gold}</div>
+      <div class="stat-item">魂力值: ${char.soulPower}</div>
+    </div>
+  `;
+  let totalGold = 0;
+  for (const charName in characters) {
+    totalGold += characters[charName].gold;
+  }
+  document.getElementById('team-gold').textContent = totalGold;
+}
+function getItemStats(item) {
+  const stats = {
+    attack: 0,
+    defense: 0
+  };
+  const quality = {
+    '普通': 1,
+    '優秀': 1.5,
+    '稀有': 2,
+    '史詩': 3
+  };
+  const baseStats = {
+    weapon: {
+      attack: 5,
+      defense: 0
+    },
+    armor: {
+      attack: 0,
+      defense: 5
+    },
+    accessory: {
+      attack: 2,
+      defense: 2
+    }
+  };
+  const multiplier = quality[item.quality] || 1;
+  stats.attack = baseStats[item.type].attack * multiplier;
+  stats.defense = baseStats[item.type].defense * multiplier;
+  return stats;
+}
+function transferItem(fromChar, toChar, itemIndex) {
+  const from = characters[fromChar];
+  const to = characters[toChar];
+  const item = from.inventory[itemIndex];
+  from.inventory.splice(itemIndex, 1);
+  to.inventory.push(item);
+  addDialogue(`${fromChar} 將 ${item.name} 交給了 ${toChar}`);
+  updateUI();
+}
+function switchCharacter() {
+  const selectedCharacter = document.getElementById('active-character').value;
+  currentCharacter = selectedCharacter;
+  updateUI();
+}
+function saveGame() {
+  const saveData = {
+    characters: characters,
+    currentCharacter: currentCharacter,
+    dialogueHistory: dialogueHistory,
+    marketItems: marketItems,
+    drawnCharacters: drawnCharacters,
+    dungeons: dungeons
+  };
+  const blob = new Blob([JSON.stringify(saveData)], {
+    type: 'application/json'
+  });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'douluo2025_save.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  addDialogue('遊戲已儲存！');
+}
+function loadGame() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = function (event) {
+      try {
+        const saveData = JSON.parse(event.target.result);
+        Object.assign(characters, saveData.characters);
+        currentCharacter = saveData.currentCharacter;
+        dialogueHistory = saveData.dialogueHistory || [];
+        marketItems = saveData.marketItems || [];
+        drawnCharacters = saveData.drawnCharacters || 0;
+        Object.assign(dungeons, saveData.dungeons || []);
+        const dialogueBox = document.getElementById('dialogue-box');
+        dialogueBox.innerHTML = '';
+        dialogueHistory.forEach(text => {
+          const div = document.createElement('div');
+          div.textContent = text;
+          dialogueBox.appendChild(div);
+        });
+        document.getElementById('active-character').value = currentCharacter;
+        updateUI();
+        addDialogue('遊戲讀取成功！');
+      } catch (error) {
+        addDialogue('讀取失敗：無效的存檔文件');
+      }
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+function handleKeyPress(event) {
+  if (event.key === "Enter") {
+    sendMessage();
+  }
+}
+function sendMessage() {
+  const input = document.getElementById('chat-input');
+  const message = input.value.trim();
+  const selectedCharacter = document.getElementById('active-character').value;
+  if (message) {
+    addDialogue(`你: ${message}`);
+    respondToMessage(message, selectedCharacter);
+    input.value = '';
+  }
+}
+function respondToMessage(message, character) {
+  const characterData = characterResponses[character];
+  let response = null;
+  for (const [keyword, responses] of Object.entries(characterData.keywords)) {
+    if (message.includes(keyword)) {
+      response = responses[Math.floor(Math.random() * responses.length)];
+      break;
+    }
+  }
+  if (!response) {
+    response = characterData.default[Math.floor(Math.random() * characterData.default.length)];
+  }
+  setTimeout(() => {
+    addDialogue(`${character}: ${response}`);
+  }, 500);
+}
+function toggleTraining() {
+  const char = characters[currentCharacter];
+  char.training = !char.training;
+  document.getElementById('battle-status').textContent = `狀態: ${char.training ? '修練中' : '待命中'}`;
+  const animContainer = document.getElementById('training-animation');
+  if (char.training) {
+    animContainer.classList.add('active');
+    startTraining();
+  } else {
+    animContainer.classList.remove('active');
+  }
+  updateUI();
+}
+function startTraining() {
+  const char = characters[currentCharacter];
+  if (!char.training) return;
+  if (char.energy > 0) {
+    for (let i = 0; i < 3; i++) {
+      createTrainingParticle();
+    }
+    char.exp += 10;
+    char.energy -= 5;
+    if (Math.random() < 0.05 && char.level >= 10) {
+      obtainSoulRing();
+    }
+    if (Math.random() < 0.1) {
+      const itemTypes = Object.keys(items);
+      const type = itemTypes[Math.floor(Math.random() * itemTypes.length)];
+      const item = items[type][Math.floor(Math.random() * items[type].length)];
+      const quality = ['普通', '優秀', '稀有', '史詩'][Math.floor(Math.random() * 4)];
+      const newItem = {
+        name: item,
+        type: type,
+        quality: quality,
+        value: Math.floor(Math.random() * 1000) + 100
+      };
+      char.inventory.push(newItem);
+      addDialogue(`${currentCharacter} 獲得了 ${quality}品質的 ${item}！`);
+    }
+    if (Math.random() < 0.03) {
+      const bone = items.soulBone[Math.floor(Math.random() * items.soulBone.length)];
+      const quality = ['普通', '優秀', '稀有', '史詩'][Math.floor(Math.random() * 4)];
+      const soulBone = {
+        name: bone,
+        type: 'soulBone',
+        quality: quality,
+        value: Math.floor(Math.random() * 2000) + 500
+      };
+      char.inventory.push(soulBone);
+      addDialogue(`${currentCharacter} 獲得了 ${quality}品質的魂骨 ${bone}！`);
+    }
+    updateUI();
+    if (char.exp >= char.expNeeded) {
+      levelUp();
+    }
+  }
+  setTimeout(startTraining, 1000);
+}
+function levelUp() {
+  const char = characters[currentCharacter];
+  char.level++;
+  char.exp = 0;
+  char.expNeeded *= 1.5;
+  char.energy = 100;
+  char.soulPower += 10;
+  if (char.level % 10 === 0) {
+    obtainSoulRing();
+  }
+  updateUI();
+  addDialogue(`${currentCharacter} 突破到 ${char.level} 級！魂力提升至 ${char.soulPower}！`);
+}
+function obtainSoulRing() {
+  const char = characters[currentCharacter];
+  const colors = ['黃', '紫', '黑'];
+  const color = colors[Math.min(Math.floor(char.level / 10) - 1, colors.length - 1)];
+  char.soulRings.push(color);
+  const soulBeastLevel = Math.floor(char.level / 10) * 10;
+  const attackBonus = soulBeastLevel * 2;
+  const defenseBonus = soulBeastLevel;
+  char.attack += attackBonus;
+  char.defense += defenseBonus;
+  addDialogue(`${currentCharacter} 獲得${color}色魂環！`);
+  addDialogue(`攻擊力增加${attackBonus}，防禦力增加${defenseBonus}！`);
+  updateUI();
+}
+function huntSoulBeast() {
+  const char = characters[currentCharacter];
+  if (char.energy < 20) {
+    addDialogue('體力不足，無法獵殺魂獸！');
+    return;
+  }
+  const soulBeastLevel = Math.floor(char.level / 10) * 10;
+  const successRate = 0.3 + char.soulPower / 100;
+  char.energy -= 20;
+  if (Math.random() < successRate) {
+    const colors = ['黃', '紫', '黑'];
+    const color = colors[Math.min(Math.floor(soulBeastLevel / 10), colors.length - 1)];
+    char.soulRings.push(color);
+    const attackBonus = soulBeastLevel * 2;
+    const defenseBonus = soulBeastLevel;
+    char.attack += attackBonus;
+    char.defense += defenseBonus;
+    addDialogue(`${currentCharacter} 成功獵殺了${soulBeastLevel}年魂獸，獲得${color}色魂環！`);
+    addDialogue(`攻擊力增加${attackBonus}，防禦力增加${defenseBonus}！`);
+  } else {
+    addDialogue(`${currentCharacter} 獵殺魂獸失敗！`);
+  }
+  updateUI();
+}
+function talkToNPC(npc) {
+  const dialogue = dialogues[npc][Math.floor(Math.random() * dialogues[npc].length)];
+  addDialogue(`${npc}: ${dialogue}`);
+}
+function addDialogue(text) {
+  const dialogueBox = document.getElementById('dialogue-box');
+  const newDiv = document.createElement('div');
+  newDiv.textContent = text;
+  dialogueBox.appendChild(newDiv);
+  dialogueBox.scrollTop = dialogueBox.scrollHeight;
+  dialogueHistory.push(text);
+}
+function updateUI() {
+  const char = characters[currentCharacter];
+  document.getElementById('level').textContent = char.level;
+  document.getElementById('exp-bar').style.width = `${char.exp / char.expNeeded * 100}%`;
+  document.getElementById('energy-bar').style.width = `${char.energy}%`;
+  document.getElementById('character-name').textContent = currentCharacter;
+  document.getElementById('wu-hun').textContent = char.武魂;
+  const soulRingsDiv = document.getElementById('soul-rings');
+  soulRingsDiv.innerHTML = char.soulRings.map((color, index) => `
+    <div class="soul-ring-item">
+      <span>${color}色魂環</span>
+      <div>
+        <button class="button" onclick="discardSoulRing(${index})">丟棄</button>
+        <button class="button" onclick="sellSoulRing(${index})">售出</button>
+      </div>
+    </div>
+  `).join('');
+  const inventoryDiv = document.getElementById('inventory');
+  inventoryDiv.innerHTML = char.inventory.map((item, index) => `<div class="item">
+      <span>${item.quality} ${item.name}</span>
+      <div>
+        <button class="button" onclick="equipItem(${index})">${isEquipped(item) ? '卸下' : '裝備'}</button>
+        <button class="button" onclick="sellItem(${index})">售出</button>
+      </div>
+    </div>`).join('');
+  const equippedWeapon = char.equipment.weapon ? `${char.equipment.weapon.quality} ${char.equipment.weapon.name}` : '無';
+  const equippedArmor = char.equipment.armor ? `${char.equipment.armor.quality} ${char.equipment.armor.name}` : '無';
+  const equippedAccessory = char.equipment.accessory ? `${char.equipment.accessory.quality} ${char.equipment.accessory.name}` : '無';
+  document.getElementById('equipped-weapon').textContent = equippedWeapon;
+  document.getElementById('equipped-armor').textContent = equippedArmor;
+  document.getElementById('equipped-accessory').textContent = equippedAccessory;
+  const soulBoneSlots = char.soulBoneSlots;
+  document.getElementById('equipped-head-bone').textContent = soulBoneSlots.head ? `${soulBoneSlots.head.quality} ${soulBoneSlots.head.name}` : '無';
+  document.getElementById('equipped-left-arm-bone').textContent = soulBoneSlots.leftArm ? `${soulBoneSlots.leftArm.quality} ${soulBoneSlots.leftArm.name}` : '無';
+  document.getElementById('equipped-right-arm-bone').textContent = soulBoneSlots.rightArm ? `${soulBoneSlots.rightArm.quality} ${soulBoneSlots.rightArm.name}` : '無';
+  document.getElementById('equipped-left-leg-bone').textContent = soulBoneSlots.leftLeg ? `${soulBoneSlots.leftLeg.quality} ${soulBoneSlots.leftLeg.name}` : '無';
+  document.getElementById('equipped-right-leg-bone').textContent = soulBoneSlots.rightLeg ? `${soulBoneSlots.rightLeg.quality} ${soulBoneSlots.rightLeg.name}` : '無';
+  document.getElementById('equipped-spine-bone').textContent = soulBoneSlots.spine ? `${soulBoneSlots.spine.quality} ${soulBoneSlots.spine.name}` : '無';
+  const marketItemsDiv = document.getElementById('market-items');
+  if (marketItemsDiv) {
+    filterMarketItems();
+  }
+  updateStats();
+  const arenaStatus = document.getElementById('arena-status');
+  if (arenaStatus) {
+    arenaStatus.textContent = `狀態: 準備就緒`;
+  }
+}
+function equipItem(index) {
+  const char = characters[currentCharacter];
+  const item = char.inventory[index];
+  if (isEquipped(item)) {
+    if (item.type === 'soulBone') {
+      for (const slot in char.soulBoneSlots) {
+        if (char.soulBoneSlots[slot] === item) {
+          char.soulBoneSlots[slot] = null;
+          char.soulPower -= item.quality === '史詩' ? 20 : item.quality === '稀有' ? 15 : item.quality === '優秀' ? 10 : 5;
+          break;
+        }
+      }
+    } else {
+      char.equipment[item.type] = null;
+    }
+    addDialogue(`${currentCharacter} 卸下了 ${item.name}`);
+  } else {
+    if (item.type === 'soulBone') {
+      const slotMap = {
+        '頭骨': 'head',
+        '左臂骨': 'leftArm',
+        '右臂骨': 'rightArm',
+        '左腿骨': 'leftLeg',
+        '右腿骨': 'rightLeg',
+        '脊椎骨': 'spine'
+      };
+      const slot = slotMap[item.name];
+      if (slot) {
+        if (char.soulBoneSlots[slot]) {
+          char.inventory.push(char.soulBoneSlots[slot]);
+          char.soulPower -= char.soulBoneSlots[slot].quality === '史詩' ? 20 : char.soulBoneSlots[slot].quality === '稀有' ? 15 : char.soulBoneSlots[slot].quality === '優秀' ? 10 : 5;
+        }
+        char.soulBoneSlots[slot] = item;
+        char.soulPower += item.quality === '史詩' ? 20 : item.quality === '稀有' ? 15 : item.quality === '優秀' ? 10 : 5;
+        char.inventory.splice(index, 1);
+      }
+    } else {
+      if (char.equipment[item.type]) {
+        char.inventory.push(char.equipment[item.type]);
+      }
+      char.equipment[item.type] = item;
+      char.inventory.splice(index, 1);
+    }
+    addDialogue(`${currentCharacter} 裝備了 ${item.name}`);
+  }
+  updateUI();
+}
+function isEquipped(item) {
+  const char = characters[currentCharacter];
+  if (item.type === 'soulBone') {
+    return Object.values(char.soulBoneSlots).includes(item);
+  }
+  return char.equipment[item.type] === item;
+}
+function sellItem(index) {
+  const char = characters[currentCharacter];
+  const item = char.inventory[index];
+  char.gold += item.value;
+  marketItems.push(item);
+  char.inventory.splice(index, 1);
+  addDialogue(`${currentCharacter} 售出了 ${item.name}，獲得 ${item.value} 金`);
+  updateUI();
+}
+function buyItem(index) {
+  const char = characters[currentCharacter];
+  const item = marketItems[index];
+  if (char.gold >= item.value) {
+    char.gold -= item.value;
+    char.inventory.push(item);
+    marketItems.splice(index, 1);
+    addDialogue(`${currentCharacter} 購買了 ${item.name}`);
+    updateUI();
+  } else {
+    addDialogue('金幣不足！');
+  }
+}
+function openMarket() {
+  document.getElementById('market-modal').style.display = 'block';
+  document.getElementById('market-item-filter').value = 'all';
+  filterMarketItems();
+}
+function closeMarket() {
+  document.getElementById('market-modal').style.display = 'none';
+}
+function recoverEnergy() {
+  for (const charName in characters) {
+    const char = characters[charName];
+    if (!char.training && char.energy < 100) {
+      char.energy = Math.min(100, char.energy + 1);
+      if (charName === currentCharacter) {
+        updateUI();
+      }
+    }
+  }
+}
+function filterMarketItems() {
+  const filter = document.getElementById('market-item-filter').value;
+  const marketItemsDiv = document.getElementById('market-items');
+  const filteredItems = filter === 'all' ? marketItems : marketItems.filter(item => item.type === filter);
+  marketItemsDiv.innerHTML = filteredItems.map((item, index) => `
+    <div class="item">
+      <span>${item.quality} ${item.name} - ${item.value}金</span>
+      <button class="button" onclick="buyItem(${index})">購買</button>
+    </div>
+  `).join('');
+}
+function discardSoulRing(index) {
+  const char = characters[currentCharacter];
+  const ring = char.soulRings[index];
+  char.soulRings.splice(index, 1);
+  const soulBeastLevel = Math.floor(char.level / 10) * 10;
+  char.attack -= soulBeastLevel * 2;
+  char.defense -= soulBeastLevel;
+  addDialogue(`${currentCharacter} 丟棄了${ring}色魂環`);
+  updateUI();
+}
+function sellSoulRing(index) {
+  const char = characters[currentCharacter];
+  const ring = char.soulRings[index];
+  const ringValues = {
+    '黃': 1000,
+    '紫': 5000,
+    '黑': 10000
+  };
+  const value = ringValues[ring] || 1000;
+  char.soulRings.splice(index, 1);
+  const soulBeastLevel = Math.floor(char.level / 10) * 10;
+  char.attack -= soulBeastLevel * 2;
+  char.defense -= soulBeastLevel;
+  char.gold += value;
+  addDialogue(`${currentCharacter} 售出了${ring}色魂環，獲得${value}金幣`);
+  updateUI();
+}
+function drawCharacter() {
+  if (drawnCharacters >= 20) {
+    addDialogue('已達到抽取角色上限(20個)！');
+    return;
+  }
+  const char = characters[currentCharacter];
+  const drawCost = 1000;
+  if (char.gold < drawCost) {
+    addDialogue('金幣不足！需要1000金幣。');
+    return;
+  }
+  char.gold -= drawCost;
+  const availableChars = possibleCharacters.filter(name => !characters.hasOwnProperty(name));
+  if (availableChars.length === 0) {
+    addDialogue('沒有更多可抽取的角色了！');
+    char.gold += drawCost;
+    return;
+  }
+  const newCharName = availableChars[Math.floor(Math.random() * availableChars.length)];
+  characters[newCharName] = {
+    level: 1,
+    exp: 0,
+    expNeeded: 100,
+    energy: 100,
+    soulPower: 10,
+    training: false,
+    soulRings: [],
+    武魂: '未知',
+    inventory: [],
+    equipment: {
+      weapon: null,
+      armor: null,
+      accessory: null,
+      soulBone: null
+    },
+    gold: 1000,
+    attack: 0,
+    defense: 0,
+    soulBones: [],
+    soulBoneSlots: {
+      head: null,
+      leftArm: null,
+      rightArm: null,
+      leftLeg: null,
+      rightLeg: null,
+      spine: null
+    }
+  };
+  drawnCharacters++;
+  const activeSelect = document.getElementById('active-character');
+  const option1 = document.createElement('option');
+  option1.value = newCharName;
+  option1.textContent = newCharName;
+  activeSelect.appendChild(option1);
+  addDialogue(`恭喜！抽到了新角色 ${newCharName}！(已抽取 ${drawnCharacters}/20)`);
+  updateUI();
+}
+function createTrainingParticle() {
+  const container = document.getElementById('training-animation');
+  const particle = document.createElement('div');
+  particle.className = 'training-particle';
+  const startX = Math.random() * window.innerWidth;
+  const startY = window.innerHeight;
+  particle.style.left = `${startX}px`;
+  particle.style.top = `${startY}px`;
+  container.appendChild(particle);
+  const animation = particle.animate([{
+    transform: `translate(0, 0)`
+  }, {
+    transform: `translate(${(Math.random() - 0.5) * 200}px, -${window.innerHeight + 10}px)`
+  }], {
+    duration: 2000,
+    easing: 'ease-out'
+  });
+  animation.onfinish = () => {
+    particle.remove();
+  };
+}
+setInterval(recoverEnergy, 1000);
+updateUI();</script>
+</body>
+</html>
